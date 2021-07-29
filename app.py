@@ -96,27 +96,52 @@ def tact_start():
 
         st.altair_chart(basic_chart)
 
+    # if st.button("Predict by Days"):
+
     days = st.slider("Enter Number of Days")
 
-    target_data_migrated = st.number_input("Enter Target data Migrated")
+    # 
 
-    if st.button('View Forecast'):
+    if st.button('View Forecast for Given days'):
 
         df = get_predicted_df(days)
 
         total = df['value'].sum()
 
-        if total > target_data_migrated:
-            st.info(f"Total Predicted data migrated is {total} in the next {days} days which is well over the target {target_data_migrated}")
-        else:
-            st.info(f"The Number of Days passed is not enough for youe target data to migrated, please increase the number of days, your current predicted total is {total} which is less than {target_data_migrated}")
-    
+        st.info(f"Total Predicted data migrated is {total} in the next {days} days")
+
         basic_chart = alt.Chart(df).mark_line().encode(
             x   = 'time',
             y   = 'value'
         )
 
         st.altair_chart(basic_chart)
+
+    target_data_migrated = int(st.text_input("Enter Target data Migrated"))
+
+    if st.button('View Forecast for a given target amount of data'):
+
+        df = get_predicted_df(100)
+
+        total = 0
+
+        for i in range(10000):
+            total += df['value'][i]
+            if total > target_data_migrated:
+                count = i
+                df = df [:len(base_df)+i]
+                break
+
+        st.info(f"Total Predicted data migrated is {total} in the next {count} days")
+
+        basic_chart = alt.Chart(df).mark_line().encode(
+            x   = 'time',
+            y   = 'value'
+        )
+
+        st.altair_chart(basic_chart)
+
+
 
 if __name__ == '__main__':
     tact_start()
